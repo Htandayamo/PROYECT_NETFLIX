@@ -38,14 +38,6 @@ CREATE TABLE resenas (
     FOREIGN KEY (id_pelicula_serie) REFERENCES peliculas_series(id) ON DELETE CASCADE
 );
 
--- Tabla de logs para registrar actividad administrativa
-CREATE TABLE logs_admin (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_admin INT NOT NULL,
-    accion TEXT NOT NULL,
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_admin) REFERENCES usuarios(id) ON DELETE CASCADE
-);
 
 -- Insertar un administrador inicial
 INSERT INTO usuarios (nombre_usuario, correo_electronico, contrasena, plan_suscripcion, estado, rol)
