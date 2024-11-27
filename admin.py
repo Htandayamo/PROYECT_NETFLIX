@@ -66,7 +66,7 @@ def editar_usuario(conexion):
             nuevo_nombre or valores_actuales[0],
             nuevo_correo or valores_actuales[1],
             nuevo_rol or valores_actuales[2],
-            nuevo_estado or valores_actÑuales[3],
+            nuevo_estado or valores_actuales[3],
             id_usuario
         ]
         cursor.execute(query, valores)
