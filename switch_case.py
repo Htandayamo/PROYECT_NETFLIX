@@ -107,23 +107,10 @@ def menu_principal(conexion, usuario):
 
 def menu_superusuario(conexion):
     """
-    Menú de Superusuario para gestionar usuarios, planes y películas/series,
-    utilizando un diccionario para simular el comportamiento de un switch.
+    Menú de Superusuario para gestionar usuarios, planes y películas/series.
     """
-    # Funciones mapeadas
-    opciones = {
-        "1": ver_usuarios,
-        "2": editar_usuario,
-        "3": eliminar_usuario,
-        "4": gestionar_planes,
-        "5": agregar_pelicula_serie,
-        "6": actualizar_pelicula_serie,
-        "7": eliminar_pelicula_serie,
-        "8": salir_menu
-    }
-
     while True:
-        print("\n=== Menú de Superusuario ===")
+        print("\n========= MENÚ DE SUPERUSUARIO ===========")
         print("1. Ver todos los usuarios")
         print("2. Editar usuario")
         print("3. Eliminar usuario")
@@ -135,44 +122,23 @@ def menu_superusuario(conexion):
 
         opcion = input("Selecciona una opción: ").strip()
 
-        # Ejecutar la opción seleccionada si es válida
-        if opcion in opciones:
-            if opcion == "8":
-                opciones[opcion](conexion)  # Llamar a la función para salir
+        match opcion:
+            case "1":
+                ver_usuarios(conexion)
+            case "2":
+                editar_usuario(conexion)
+            case "3":
+                eliminar_usuario(conexion)
+            case "4":
+                gestionar_planes(conexion)
+            case "5":
+                agregar_pelicula_serie(conexion)
+            case "6":
+                actualizar_pelicula_serie(conexion)
+            case "7":
+                eliminar_pelicula_serie(conexion)
+            case "8":
                 break
-            else:
-                opciones[opcion](conexion)  # Ejecutar la función correspondiente
-        else:
-            print("Opción no válida. Intenta nuevamente.")
+            case _:
+                print("Opción no válida. Intenta nuevamente.")
 
-def salir_menu(conexion):
-    """
-    Función para salir del menú.
-    """
-    print("Saliendo del menú de Superusuario.")
-
-
-
-
-
-
-
-
-
-# Placeholder de las funciones adicionales (a desarrollar después)
-
-
-def gestionar_planes(conexion, usuario):
-    print("\nFunción para gestionar planes (a implementar).")
-
-def consultar_visualizaciones(conexion, usuario):
-    print("\nFunción para consultar visualizaciones (a implementar).")
-
-def calificar_contenido(conexion, usuario):
-    print("\nFunción para calificar contenido (a implementar).")
-
-def gestionar_dispositivos(conexion, usuario):
-    print("\nFunción para gestionar dispositivos (a implementar).")
-
-def consultar_historial_pagos(conexion, usuario):
-    print("\nFunción para consultar historial de pagos (a implementar).")
