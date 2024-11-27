@@ -93,7 +93,7 @@ def eliminar_usuario(conexion):
         cursor.close()
 
 
-
+def gestionar_planes(conexion):
     """
     Menú para gestionar planes y asignar uno nuevo a los usuarios.
     """
@@ -109,7 +109,11 @@ def eliminar_usuario(conexion):
         if opcion == "1":
             try:
                 # Mostrar los usuarios con sus planes
-                query = "SELECT id, plan_suscripcion FROM usuarios"
+                query = """
+                SELECT u.id, u.nombre, p.tipo_plan
+                FROM usuarios u
+                LEFT JOIN planes p ON u.id_plan = p.id
+                """
                 cursor.execute(query)
                 usuarios = cursor.fetchall()
 
@@ -164,81 +168,48 @@ def eliminar_usuario(conexion):
             print("Opción no válida. Intenta nuevamente.")
     cursor.close()
 
-def gestionar_planes(conexion):
+def ver_peliculas_series(conexion):
     """
-    Menú para gestionar planes y asignar uno nuevo a los usuarios.
+    Muestra todas las películas y series registradas en la base de datos.
     """
     cursor = conexion.cursor()
-    while True:
-        print("\n=== Gestión de Planes ===")
-        print("1. Ver usuarios y sus planes")
-        print("2. Asignar un nuevo plan a un usuario")
-        print("3. Regresar")
+    try:
+        # Obtener todas las películas y series
+        query = """
+        SELECT id, titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada, fecha_creacion
+        FROM peliculas_series
+        """
+        cursor.execute(query)
+        peliculas_series = cursor.fetchall()
 
-        opcion = input("Selecciona una opción: ").strip()
+        if peliculas_series:
+            # Crear la tabla con PrettyTable
+            tabla = PrettyTable()
+            tabla.field_names = [
+                "ID", "Título", "Descripción", "Género", "Año de Lanzamiento", 
+                "Clasificación", "URL Portada", "Fecha de Creación"
+            ]
 
-        if opcion == "1":
-            try:
-                # Mostrar los usuarios con sus planes asignados
-                query = """
-                SELECT id, nombre_usuario, plan_suscripcion
-                FROM usuarios
-                """
-                cursor.execute(query)
-                usuarios = cursor.fetchall()
+            # Agregar las filas de datos
+            for pelicula in peliculas_series:
+                tabla.add_row([
+                    pelicula[0], 
+                    pelicula[1], 
+                    pelicula[2], 
+                    pelicula[3], 
+                    pelicula[4], 
+                    pelicula[5], 
+                    pelicula[6], 
+                    pelicula[7]
+                ])
 
-                if usuarios:
-                    # Crear la tabla con PrettyTable
-                    tabla = PrettyTable()
-                    tabla.field_names = ["ID Usuario", "Nombre de Usuario", "Plan Asignado"]
-
-                    # Agregar las filas de datos
-                    for usuario in usuarios:
-                        tabla.add_row([usuario[0], usuario[1], usuario[2]])
-
-                    # Mostrar la tabla
-                    print(tabla)
-                else:
-                    print("No hay usuarios registrados.")
-            except Exception as e:
-                print(f"Error al obtener los usuarios: {e}")
-        
-        elif opcion == "2":
-            try:
-                # Planes disponibles para asignar
-                planes_disponibles = ['basico', 'estandar', 'premium']
-                print("\nPlanes disponibles para asignar:")
-                for idx, plan in enumerate(planes_disponibles, 1):
-                    print(f"{idx}. {plan}")
-
-                # Solicitar al administrador el ID del usuario y el plan
-                id_usuario = int(input("\nID del usuario para asignar el nuevo plan: ").strip())
-                nuevo_plan_idx = int(input(f"Selecciona el número del nuevo plan a asignar (1-{len(planes_disponibles)}): ").strip())
-
-                # Validar la selección del plan
-                if 1 <= nuevo_plan_idx <= len(planes_disponibles):
-                    nuevo_plan = planes_disponibles[nuevo_plan_idx - 1]
-
-                    # Verificar si el usuario existe
-                    query_usuario = "SELECT id FROM usuarios WHERE id = %s"
-                    cursor.execute(query_usuario, (id_usuario,))
-                    if cursor.fetchone():
-                        # Asignar el nuevo plan al usuario
-                        query_update = "UPDATE usuarios SET plan_suscripcion = %s WHERE id = %s"
-                        cursor.execute(query_update, (nuevo_plan, id_usuario))
-                        conexion.commit()
-                        print(f"Plan '{nuevo_plan}' asignado exitosamente al usuario con ID {id_usuario}.")
-                    else:
-                        print("ID de usuario no válido.")
-                else:
-                    print("Selección de plan no válida.")
-            except Exception as e:
-                print(f"Error al asignar el plan: {e}")
-        
-        elif opcion == "3":
-            break
+            # Mostrar la tabla
+            print("\n=== Películas y Series Registradas ===")
+            print(tabla)
         else:
-            print("Opción no válida. Intenta nuevamente.")
+            print("No hay películas o series registradas.")
+    except Exception as e:
+        print(f"Error al obtener las películas y series: {e}")
     
     cursor.close()
 
@@ -261,7 +232,7 @@ def agregar_pelicula_serie(conexion):
     try:
         # Insertar la nueva película o serie en la base de datos
         query = """
-        INSERT INTO peliculas_series (titulo, descripcion, genero, ano_lanzamiento, clasificacion, url_portada)
+        INSERT INTO peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (titulo, descripcion, genero, ano_lanzamiento, clasificacion, url_portada))
@@ -303,7 +274,7 @@ def actualizar_pelicula_serie(conexion):
         SET titulo = COALESCE(%s, titulo),
             descripcion = COALESCE(%s, descripcion),
             genero = COALESCE(%s, genero),
-            ano_lanzamiento = COALESCE(%s, ano_lanzamiento),
+            anio_lanzamiento = COALESCE(%s, anio_lanzamiento),
             clasificacion = COALESCE(%s, clasificacion),
             url_portada = COALESCE(%s, url_portada)
         WHERE id = %s
