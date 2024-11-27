@@ -99,12 +99,9 @@ def registrar_cuenta(conexion):
 def iniciar_sesion(conexion):
     """
     Función para iniciar sesión.
-
     """
-
     from hashlib import sha256
     from switch_case import menu_principal, menu_superusuario
-
 
     try:
         correo = input("Introduce tu correo: ").strip()
@@ -113,7 +110,7 @@ def iniciar_sesion(conexion):
         # Hashear la contraseña ingresada
         contrasena_hash = sha256(contrasena.encode()).hexdigest()
 
-        cursor = conexion.cursor()
+        cursor = conexion.cursor()  # Usamos el cursor normal
         query = """
         SELECT id, nombre_usuario, plan_suscripcion, rol 
         FROM usuarios 
@@ -123,17 +120,17 @@ def iniciar_sesion(conexion):
         usuario = cursor.fetchone()
 
         if usuario:
+            # Acceder a los elementos usando índices de la tupla
             print(f"\n¡Bienvenido {usuario[1]}! Tu plan es {usuario[2]} y tu rol es {usuario[3]}.")
-            
+
             # Verificar el rol y redirigir al menú correspondiente
-            if usuario[3] == "admin":  # O 'admin', dependiendo de tu configuración de roles
-                print("\nAccediendo al menú de Superusuario...")
-                menu_superusuario(conexion)  # Llamar al menú de superusuario
-            else:
+            if usuario[3] == "usuario":  
                 print("\nAccediendo al menú de usuario normal...")
-                # Aquí puedes redirigir al menú de usuarios normales si existe
-                menu_principal(conexion, usuario)  # Asegúrate de tener esta función implementada
-            
+                menu_principal(conexion, usuario)  
+            elif usuario[3] == "admin":  # Si el rol es 'admin'
+                print("\nAccediendo al menú de Superusuario...")
+                menu_superusuario(conexion)  # Llamar al menú de superusuario# Llamar al menú de usuario normal
+
             return {
                 "IdUsuario": usuario[0],
                 "NombreUsuario": usuario[1],
@@ -148,5 +145,6 @@ def iniciar_sesion(conexion):
         return None
     finally:
         cursor.close()
+
 
 

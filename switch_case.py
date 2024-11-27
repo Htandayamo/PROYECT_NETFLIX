@@ -48,16 +48,39 @@ def menu_principal(conexion, usuario):
     Menú principal que se muestra después de que el usuario inicia sesión correctamente.
     """
     while True:
-        print("\n========= MENU PRINPIPAL ===========")
-        print(f"¡Bienvenido, {usuario['NombreUsuario']}!")
+        print("\n========= MENÚ PRINCIPAL ===========")
+        print(f"¡Bienvenido, {usuario[1]}!")
         print("1. Gestionar perfiles")
         print("2. Gestionar planes")
         print("3. Gestionar dispositivos")
-        print("4. Contenido")
+        print("4. Ver contenido")
         print("5. Consultar historial de visualizaciones")
         print("6. Consultar historial de pagos")
-        print("7. Cerrar sesión")
+        print("7. Gestionar reseñas")
+        print("8. Cerrar sesión")
         opcion = input("Selecciona una opción: ")
+
+        match opcion:
+            case "1":
+                gestionar_perfiles(conexion, usuario['IdUsuario'])
+            case "2":
+                gestionar_planes(conexion, usuario)
+            case "3":
+                gestionar_dispositivos(conexion, usuario)
+            case "4":
+                ver_contenido(conexion)
+            case "5":
+                consultar_historial_visualizaciones(conexion, usuario)
+            case "6":
+                consultar_historial_pagos(conexion, usuario)
+            case "7":
+                gestionar_resenas(conexion, usuario)
+            case "8":
+                cerrar_sesion()
+                break
+            case _:
+                print("Opción inválida. Intenta nuevamente.")
+
 
         match opcion:
             case "1":
