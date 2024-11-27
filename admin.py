@@ -180,7 +180,7 @@ def ver_peliculas_series(conexion):
     try:
         # Obtener todas las películas y series
         query = """
-        SELECT id, titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada, fecha_creacion
+        SELECT id, titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada
         FROM peliculas_series
         """
         cursor.execute(query)
@@ -190,8 +190,8 @@ def ver_peliculas_series(conexion):
             # Crear la tabla con PrettyTable
             tabla = PrettyTable()
             tabla.field_names = [
-                "ID", "Título", "Descripción", "Género", "Año de Lanzamiento", 
-                "Clasificación", "URL Portada", "Fecha de Creación"
+                "ID", "Título", "Descripción", "Género", "Año", 
+                "Clase", "URL Portada"
             ]
 
             # Agregar las filas de datos
@@ -203,8 +203,7 @@ def ver_peliculas_series(conexion):
                     pelicula[3], 
                     pelicula[4], 
                     pelicula[5], 
-                    pelicula[6], 
-                    pelicula[7]
+                    pelicula[6]
                 ])
 
             # Mostrar la tabla

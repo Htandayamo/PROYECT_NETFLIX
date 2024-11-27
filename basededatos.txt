@@ -42,3 +42,38 @@ CREATE TABLE resenas (
 -- Insertar un administrador inicial
 INSERT INTO usuarios (nombre_usuario, correo_electronico, contrasena, plan_suscripcion, estado, rol)
 VALUES ('admin', 'admin@admin.com', MD5('admin123'), 'premium', 'activa', 'admin');
+
+
+
+
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Piranha', 'pretium iaculis', 'Terror', 2005, 'PG', 'http://sphinn.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Ten Violent Women', 'amet lobortis', 'Bélica', 1969, 'PG-13', 'https://cornell.edu');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Study in Terror, A', 'dictumst', 'Documental', 1990, 'PG', 'http://rediff.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('No Where No One ', 'ut', 'Cine independiente', 1970, 'R', 'https://mac.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Shoot the Moon', 'quisque', 'Fantasía', 1919, 'G', 'http://illinois.edu');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Proposition', 'aliquet maecenas', 'Deportes', 1917, 'NC-17', 'https://furl.net');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Limelight', 'in porttitor', 'Western', 2018, 'G', 'https://mtv.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Black Narcissus', 'nonummy integer', 'Musical', 1947, 'PG-13', 'https://usda.gov');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('WALL·E', 'cras', 'Bélica', 1968, 'G', 'https://infoseek.co.jp');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Thrashin''', 'tortor eu', 'Bélica', 1941, 'G', 'https://biblegateway.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Mr. Sardonicus', 'eget', 'Comedia', 1982, 'PG', 'http://exblog.jp');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Prophecy II, The', 'condimentum', 'Western', 1923, 'PG', 'https://wikispaces.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Unknown', 'ligula sit', 'Animación', 1939, 'G', 'https://springer.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Jurassic Park', 'nulla', 'Ciencia Ficción', 1909, 'G', 'http://instagram.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('The Retrieval', 'vel sem', 'Fantasía', 1925, 'R', 'http://drupal.org');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Birth of a Nation, The', 'a', 'Musical', 1967, 'G', 'http://ucoz.ru');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Windmill Movie, The', 'eros', 'Ciencia Ficción', 1907, 'R', 'http://pen.io');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Simpsons Movie, The', 'at', 'Terror', 1923, 'PG-13', 'https://gmpg.org');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('The Anderssons in Greece', 'primis in', 'Comedia', 1966, 'R', 'http://jimdo.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Flowers of St. Francis', 'dictumst maecenas', 'Documental', 1949, 'R', 'https://marriott.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Farewell to Arms, A', 'lorem ipsum', 'Documental', 1924, 'NC-17', 'http://webs.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Fun in Acapulco', 'in', 'Romance', 1936, 'PG', 'https://blinklist.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Lola ', 'odio', 'Acción', 2010, 'PG-13', 'https://ask.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Sarah Silverman:', 'vel', 'Terror', 1938, 'G', 'https://chron.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Pursuit of the Graf Spee', 'purus phasellus', 'Histórica', 1918, 'NC-17', 'https://hexun.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Big Trees, The', 'pede', 'Histórica', 1973, 'G', 'https://tiny.cc');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Arcade', 'vel', 'Western', 1947, 'G', 'http://smh.com.au');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Jim Carrey', 'ac', 'Acción', 1963, 'NC-17', 'http://biglobe.ne.jp');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Voyeur (Abel)', 'in eleifend', 'Ciencia Ficción', 1961, 'PG-13', 'https://digg.com');
+insert into peliculas_series (titulo, descripcion, genero, anio_lanzamiento, clasificacion, url_portada) values ('Tell Them Willie Boy', 'ante', 'Aventura', 1979, 'G', 'http://theglobeandmail.com');
+
