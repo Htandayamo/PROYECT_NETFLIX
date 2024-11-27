@@ -6,7 +6,8 @@ def conectar():
     try:
         conexion = mysql.connector.connect(
             host="localhost",       # Cambiar según tu configuración
-            user="root",      # Usuario de tu MySQL
+            user="root",
+            #password="", #en caso de que la base de datos tenga una contraseña            
             database="Netflix"  # Nombre de tu base de datos
         )
         if conexion.is_connected():

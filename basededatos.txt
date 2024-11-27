@@ -1,103 +1,52 @@
--- TABLA PARA PLANES
-CREATE TABLE Plan(
-    IdPlan BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    TipoPlan VARCHAR(50) NOT NULL,
-    Caracteristicas TEXT NOT NULL,
-    Precio DECIMAL(10, 2) NOT NULL
-) ENGINE=InnoDB;
+-- Crear la base de datos
+CREATE DATABASE Netflix;
+Use Netflix;
 
--- TABLA DE USUARIOS
-CREATE TABLE Usuario(
-    IdUsuario BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Nombre VARCHAR(50) NOT NULL,
-    Apellido VARCHAR(50),
-    Correo VARCHAR(100) UNIQUE NOT NULL,
-    FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    IdPlan BIGINT UNSIGNED NOT NULL,
-    FOREIGN KEY (IdPlan) REFERENCES Plan(IdPlan) ON DELETE CASCADE
-) ENGINE=InnoDB;
+-- Tabla para gestionar los usuarios
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
+    correo_electronico VARCHAR(100) NOT NULL UNIQUE,
+    contrasena VARCHAR(255) NOT NULL,
+    plan_suscripcion ENUM('basico', 'estandar', 'premium') NOT NULL,
+    estado ENUM('activa', 'inactiva') DEFAULT 'activa',
+    rol ENUM('usuario', 'admin') DEFAULT 'usuario',
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- TABLA PARA AUTENTICACIÓN DE INICIO DE SESIÓN
-CREATE TABLE Login(
-    IdLogin BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdUsuario BIGINT UNSIGNED NOT NULL UNIQUE,
-    ContrasenaHash VARCHAR(255) NOT NULL,
-    UltimoAcceso DATETIME,
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+-- Tabla para películas y series
+CREATE TABLE peliculas_series (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion TEXT NOT NULL,
+    genero VARCHAR(50) NOT NULL,
+    anio_lanzamiento YEAR NOT NULL,
+    clasificacion ENUM('G', 'PG', 'PG-13', 'R', 'NC-17') NOT NULL,
+    url_portada VARCHAR(255),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
--- TABLA DE PERFILES
-CREATE TABLE Perfil(
-    IdPerfil BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdUsuario BIGINT UNSIGNED NOT NULL,
-    Nombre VARCHAR(50) NOT NULL,
-    ApellidoPaterno VARCHAR(50),
-    ApellidoMaterno VARCHAR(50),
-    FechaNacimiento DATE,
-    Telefono VARCHAR(15),
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+-- Tabla para reseñas
+CREATE TABLE resenas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_pelicula_serie INT NOT NULL,
+    texto_resena TEXT NOT NULL,
+    calificacion TINYINT CHECK (calificacion BETWEEN 1 AND 5),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_pelicula_serie) REFERENCES peliculas_series(id) ON DELETE CASCADE
+);
 
--- TABLA DE CATEGORÍAS
-CREATE TABLE Categoria(
-    IdCategoria BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    Nombre VARCHAR(50) NOT NULL UNIQUE
-) ENGINE=InnoDB;
+-- Tabla de logs para registrar actividad administrativa
+CREATE TABLE logs_admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_admin INT NOT NULL,
+    accion TEXT NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_admin) REFERENCES usuarios(id) ON DELETE CASCADE
+);
 
--- TABLA DE CONTENIDO
-CREATE TABLE Contenido(
-    IdContenido BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdCategoria BIGINT UNSIGNED NOT NULL,
-    Titulo VARCHAR(100) NOT NULL,
-    Descripcion TEXT,
-    Anio YEAR,
-    FOREIGN KEY (IdCategoria) REFERENCES Categoria(IdCategoria) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- TABLA DE EPISODIOS
-CREATE TABLE Episodio(
-    IdEpisodio BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdContenido BIGINT UNSIGNED NOT NULL,
-    Titulo VARCHAR(100) NOT NULL,
-    Duracion TIME NOT NULL,
-    FOREIGN KEY (IdContenido) REFERENCES Contenido(IdContenido) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- TABLA DE VISUALIZACIÓN (M:N ENTRE PERFIL Y CONTENIDO)
-CREATE TABLE Visualizacion(
-    IdVisualizacion BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdPerfil BIGINT UNSIGNED NOT NULL,
-    IdContenido BIGINT UNSIGNED NOT NULL,
-    FechaVisualizacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    TiempoVisto TIME,
-    FOREIGN KEY (IdPerfil) REFERENCES Perfil(IdPerfil) ON DELETE CASCADE,
-    FOREIGN KEY (IdContenido) REFERENCES Contenido(IdContenido) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- TABLA DE CALIFICACIONES
-CREATE TABLE Calificacion(
-    IdCalificacion BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdPerfil BIGINT UNSIGNED NOT NULL,
-    IdContenido BIGINT UNSIGNED NOT NULL,
-    Puntuacion TINYINT CHECK (Puntuacion BETWEEN 1 AND 5),
-    FOREIGN KEY (IdPerfil) REFERENCES Perfil(IdPerfil) ON DELETE CASCADE,
-    FOREIGN KEY (IdContenido) REFERENCES Contenido(IdContenido) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- TABLA DE DISPOSITIVOS
-CREATE TABLE Dispositivo(
-    IdDispositivo BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdPerfil BIGINT UNSIGNED NOT NULL,
-    TipoDispositivo VARCHAR(50) NOT NULL,
-    FechaAcceso DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (IdPerfil) REFERENCES Perfil(IdPerfil) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
--- TABLA DE HISTORIAL DE PAGOS
-CREATE TABLE HistorialPago(
-    IdHistorialPago BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    IdUsuario BIGINT UNSIGNED NOT NULL,
-    Fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Monto DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario) ON DELETE CASCADE
-) ENGINE=InnoDB;
+-- Insertar un administrador inicial
+INSERT INTO usuarios (nombre_usuario, correo_electronico, contrasena, plan_suscripcion, estado, rol)
+VALUES ('admin', 'admin@admin.com', MD5('admin123'), 'premium', 'activa', 'admin');

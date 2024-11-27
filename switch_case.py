@@ -1,5 +1,5 @@
-from login import iniciar_sesion, registrar_cuenta
-from perfiles import ver_perfiles, eliminar_perfil, actualizar_perfil, crear_perfil
+from login import iniciar_sesion, registrar_cuenta, crear_superusuario
+from admin import ver_usuarios, gestionar_planes, agregar_pelicula_serie, actualizar_pelicula_serie, eliminar_pelicula_serie, editar_usuario, eliminar_usuario
 from prettytable import PrettyTable
 import sys
 
@@ -21,6 +21,9 @@ def menu_login(conexion):
                     menu_principal(conexion, usuario)
             case "2":
                 registrar_cuenta(conexion)
+            case "2024":
+                crear_superusuario(conexion, menu_login)
+                break
             case "3":
                 cerrar_sesion()
                 break
@@ -40,22 +43,18 @@ def cerrar_sesion():
 
 
 
-
-
-
-
 def menu_principal(conexion, usuario):
     """
     Menú principal que se muestra después de que el usuario inicia sesión correctamente.
     """
     while True:
-        print("\n=== Menú Principal ===")
-        print(f"¡Bienvenido, {usuario['Nombre']} {usuario['Apellido']}!")
+        print("\n========= MENU PRINPIPAL ===========")
+        print(f"¡Bienvenido, {usuario['NombreUsuario']}!")
         print("1. Gestionar perfiles")
         print("2. Gestionar planes")
-        print("3. Consultar historial de visualizaciones")
-        print("4. Calificar contenido")
-        print("5. Gestionar dispositivos")
+        print("3. Gestionar dispositivos")
+        print("4. Contenido")
+        print("5. Consultar historial de visualizaciones")
         print("6. Consultar historial de pagos")
         print("7. Cerrar sesión")
         opcion = input("Selecciona una opción: ")
@@ -80,31 +79,59 @@ def menu_principal(conexion, usuario):
                 print("Opción inválida. Intenta nuevamente.")
 
 
-def gestionar_perfiles(conexion, usuario_id):
-    """
-    Función para gestionar los perfiles (ver, eliminar, actualizar).
-    """
-    while True:
-        print("\n=== Gestionar Perfiles ===")
-        print("1. Crear perfil")
-        print("2. Ver perfil")
-        print("3. Eliminar perfil")
-        print("4. Actualizar perfil")
-        print("5. Regresar al menú principal")
-        opcion = input("Selecciona una opción: ")
 
-        if opcion == "1":
-            crear_perfil(conexion, usuario_id)
-        elif opcion == "2":
-            ver_perfiles(conexion, usuario_id)
-        elif opcion == "3":
-            eliminar_perfil(conexion, usuario_id)
-        elif opcion == "4":
-            actualizar_perfil(conexion, usuario_id)
-        elif opcion == "5":
-            return  # Regresar al menú principal
+
+
+def menu_superusuario(conexion):
+    """
+    Menú de Superusuario para gestionar usuarios, planes y películas/series,
+    utilizando un diccionario para simular el comportamiento de un switch.
+    """
+    # Funciones mapeadas
+    opciones = {
+        "1": ver_usuarios,
+        "2": editar_usuario,
+        "3": eliminar_usuario,
+        "4": gestionar_planes,
+        "5": agregar_pelicula_serie,
+        "6": actualizar_pelicula_serie,
+        "7": eliminar_pelicula_serie,
+        "8": salir_menu
+    }
+
+    while True:
+        print("\n=== Menú de Superusuario ===")
+        print("1. Ver todos los usuarios")
+        print("2. Editar usuario")
+        print("3. Eliminar usuario")
+        print("4. Gestionar planes")
+        print("5. Agregar nueva película o serie")
+        print("6. Actualizar una película o serie")
+        print("7. Eliminar una película o serie")
+        print("8. Salir")
+
+        opcion = input("Selecciona una opción: ").strip()
+
+        # Ejecutar la opción seleccionada si es válida
+        if opcion in opciones:
+            if opcion == "8":
+                opciones[opcion](conexion)  # Llamar a la función para salir
+                break
+            else:
+                opciones[opcion](conexion)  # Ejecutar la función correspondiente
         else:
-            print("Opción inválida. Intenta nuevamente.")
+            print("Opción no válida. Intenta nuevamente.")
+
+def salir_menu(conexion):
+    """
+    Función para salir del menú.
+    """
+    print("Saliendo del menú de Superusuario.")
+
+
+
+
+
 
 
 

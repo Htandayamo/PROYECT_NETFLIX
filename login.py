@@ -1,64 +1,96 @@
 from hashlib import sha256
 
-def registrar_cuenta(conexion):
-    cursor = conexion.cursor()
-    print("\n=== Registrar Nueva Cuenta ===")
-    
-    nombre = input("Nombre: ")
-    apellido = input("Apellido (opcional): ")
-    correo = input("Correo: ")
-    contrasena = input("Contraseña: ")
-    confirmar_contrasena = input("Confirma la Contraseña: ")
 
+def crear_superusuario(conexion, menu_login):
+    """
+    Función para crear una cuenta de superusuario. Solo ejecutada por desarrolladores o en una configuración inicial.
+    """
+    cursor = conexion.cursor()
+    print("\n=== Crear Superusuario ===")
+    
+    # Solicitar datos del superusuario
+    nombre_usuario = input("Nombre de superusuario: ").strip()
+    correo = input("Correo del superusuario: ").strip()
+    contrasena = input("Contraseña: ").strip()
+    confirmar_contrasena = input("Confirma la contraseña: ").strip()
+
+    # Validar contraseñas
     if contrasena != confirmar_contrasena:
         print("\nError: Las contraseñas no coinciden. Intenta nuevamente.")
         return
 
-    # Hashear la contraseña ingresada
+    # Hashear la contraseña
     contrasena_hash = sha256(contrasena.encode()).hexdigest()
 
     try:
-        # Obtener el IdPlan para el plan por defecto (por ejemplo, "No Premium")
-        query_plan = "SELECT IdPlan FROM Plan WHERE TipoPlan = 'No Premium' LIMIT 1"
-        cursor.execute(query_plan)
-        plan_resultado = cursor.fetchone()
-
-        if not plan_resultado:
-            print("\nError: No se encontró el plan por defecto ('No Premium').")
-            return
-
-        id_plan = plan_resultado[0]
-
-        # Insertar datos en la tabla Usuario
-        query_usuario = """
-        INSERT INTO Usuario (Nombre, Apellido, Correo, IdPlan)
-        VALUES (%s, %s, %s, %s)
+        # Insertar datos en la tabla usuarios con rol 'superusuario'
+        query_superusuario = """
+        INSERT INTO usuarios (nombre_usuario, correo_electronico, contrasena, plan_suscripcion, rol)
+        VALUES (%s, %s, %s, 'premium', 'admin')
         """
-        cursor.execute(query_usuario, (nombre, apellido, correo, id_plan))
-        id_usuario = cursor.lastrowid
-
-        # Insertar datos en la tabla Login
-        query_login = """
-        INSERT INTO Login (IdUsuario, ContrasenaHash)
-        VALUES (%s, %s)
-        """
-        cursor.execute(query_login, (id_usuario, contrasena_hash))
-
+        cursor.execute(query_superusuario, (nombre_usuario, correo, contrasena_hash))
         conexion.commit()
-        print(f"\n¡Cuenta creada exitosamente! Ahora puedes iniciar sesión, {nombre}.")
+
+        print(f"\nSuperusuario {nombre_usuario} creado exitosamente.")
+
+        # Redirigir al menú de inicio de sesión
+        print("\nRedirigiendo al menú de inicio de sesión...")
+        menu_login(conexion)
 
     except Exception as e:
-        print(f"\nError al registrar la cuenta: {e}")
+        print(f"\nError al crear el superusuario: {e}")
         conexion.rollback()
+
     finally:
         cursor.close()
 
 
 
+def registrar_cuenta(conexion):
+    """
+    Función para registrar una nueva cuenta con el plan 'básico' por defecto.
+    """
+    cursor = conexion.cursor()
+    print("\n=== Registrar Nueva Cuenta ===")
+    
+    # Solicitar datos al usuario
+    nombre_usuario = input("Nombre de usuario: ").strip()
+    correo = input("Correo electrónico: ").strip()
+    contrasena = input("Contraseña: ").strip()
+    confirmar_contrasena = input("Confirma la Contraseña: ").strip()
 
+    # Validar que las contraseñas coincidan
+    if contrasena != confirmar_contrasena:
+        print("\nError: Las contraseñas no coinciden. Intenta nuevamente.")
+        return
 
+    # Hashear la contraseña ingresada (usando SHA256 en lugar de MD5 por seguridad)
+    contrasena_hash = sha256(contrasena.encode()).hexdigest()
 
+    try:
+        # Verificar si el correo ya está registrado
+        query_correo = "SELECT id FROM usuarios WHERE correo_electronico = %s"
+        cursor.execute(query_correo, (correo,))
+        if cursor.fetchone():
+            print("\nError: Este correo ya está registrado. Usa otro correo electrónico.")
+            return
 
+        # Insertar los datos del nuevo usuario con plan básico por defecto
+        query_usuario = """
+        INSERT INTO usuarios (nombre_usuario, correo_electronico, contrasena, plan_suscripcion, estado, rol)
+        VALUES (%s, %s, %s, 'basico', 'activa', 'usuario')
+        """
+        cursor.execute(query_usuario, (nombre_usuario, correo, contrasena_hash))
+        conexion.commit()
+
+        print(f"\n¡Cuenta creada exitosamente! Ahora puedes iniciar sesión, {nombre_usuario}.")
+
+    except Exception as e:
+        print(f"\nError al registrar la cuenta: {e}")
+        conexion.rollback()
+
+    finally:
+        cursor.close()
 
 
 
@@ -67,33 +99,54 @@ def registrar_cuenta(conexion):
 def iniciar_sesion(conexion):
     """
     Función para iniciar sesión.
+
     """
+
+    from hashlib import sha256
+    from switch_case import menu_principal, menu_superusuario
+
+
     try:
-        correo = input("Introduce tu correo: ")
-        contrasena = input("Introduce tu contraseña: ")
+        correo = input("Introduce tu correo: ").strip()
+        contrasena = input("Introduce tu contraseña: ").strip()
 
         # Hashear la contraseña ingresada
         contrasena_hash = sha256(contrasena.encode()).hexdigest()
 
         cursor = conexion.cursor()
         query = """
-        SELECT L.IdUsuario, U.Nombre, U.Apellido, P.TipoPlan 
-        FROM Login L
-        JOIN Usuario U ON L.IdUsuario = U.IdUsuario
-        JOIN Plan P ON U.IdPlan = P.IdPlan
-        WHERE U.Correo = %s AND L.ContrasenaHash = %s
+        SELECT id, nombre_usuario, plan_suscripcion, rol 
+        FROM usuarios 
+        WHERE correo_electronico = %s AND contrasena = %s
         """
         cursor.execute(query, (correo, contrasena_hash))
         usuario = cursor.fetchone()
 
         if usuario:
-            return {"IdUsuario": usuario[0], "Nombre": usuario[1], "Apellido": usuario[2], "TipoPlan": usuario[3]}
+            print(f"\n¡Bienvenido {usuario[1]}! Tu plan es {usuario[2]} y tu rol es {usuario[3]}.")
+            
+            # Verificar el rol y redirigir al menú correspondiente
+            if usuario[3] == "admin":  # O 'admin', dependiendo de tu configuración de roles
+                print("\nAccediendo al menú de Superusuario...")
+                menu_superusuario(conexion)  # Llamar al menú de superusuario
+            else:
+                print("\nAccediendo al menú de usuario normal...")
+                # Aquí puedes redirigir al menú de usuarios normales si existe
+                menu_principal(conexion, usuario)  # Asegúrate de tener esta función implementada
+            
+            return {
+                "IdUsuario": usuario[0],
+                "NombreUsuario": usuario[1],
+                "Plan": usuario[2],
+                "Rol": usuario[3]
+            }
         else:
-            print("Correo o contraseña incorrectos.")
+            print("\nCorreo o contraseña incorrectos.")
             return None
     except Exception as e:
-        print(f"Error al iniciar sesión: {e}")
+        print(f"\nError al iniciar sesión: {e}")
         return None
     finally:
         cursor.close()
+
 
