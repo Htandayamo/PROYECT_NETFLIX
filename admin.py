@@ -42,17 +42,34 @@ def editar_usuario(conexion):
         id_usuario = int(input("Ingresa el ID del usuario a editar: ").strip())
 
         # Solicitar los nuevos datos para el usuario
-        nuevo_nombre = input("Nuevo nombre de usuario: ").strip()
-        nuevo_correo = input("Nuevo correo electrónico: ").strip()
-        nuevo_rol = input("Nuevo rol (admin, usuario): ").strip()
-        nuevo_estado = input("Nuevo estado ('activa o inactiva'): ").strip()
+        nuevo_nombre = input("Nuevo nombre de usuario (opcional): ").strip()
+        nuevo_correo = input("Nuevo correo electrónico (opcional): ").strip()
+        nuevo_rol = input("Nuevo rol (admin, usuario) (opcional): ").strip()
+        nuevo_estado = input("Nuevo estado ('activa o inactiva') (opcional): ").strip()
+
+        # Obtener los valores actuales del usuario
+        query = """
+        SELECT nombre_usuario, correo_electronico, rol, estado
+        FROM usuarios
+        WHERE id = %s
+        """
+        cursor.execute(query, (id_usuario,))
+        valores_actuales = cursor.fetchone()
+
         # Actualizar los datos del usuario en la base de datos
         query = """
         UPDATE usuarios
         SET nombre_usuario = %s, correo_electronico = %s, rol = %s, estado = %s
         WHERE id = %s
         """
-        cursor.execute(query, (nuevo_nombre, nuevo_correo, nuevo_rol, nuevo_estado, id_usuario))
+        valores = [
+            nuevo_nombre or valores_actuales[0],
+            nuevo_correo or valores_actuales[1],
+            nuevo_rol or valores_actuales[2],
+            nuevo_estado or valores_actÑuales[3],
+            id_usuario
+        ]
+        cursor.execute(query, valores)
         conexion.commit()
 
         print("Usuario actualizado exitosamente.")

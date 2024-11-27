@@ -123,4 +123,4 @@ def menu_superusuario(conexion):
             case "9":
                 break
             case _:
-                print("Opción no válida. Intenta nuevamente.")
+                print("opcion incorrecta. Intenta nuevamente.")

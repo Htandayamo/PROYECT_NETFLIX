@@ -9,7 +9,7 @@ def crear_superusuario(conexion, menu_login):
     print("\n=== Crear Superusuario ===")
     
     # Solicitar datos del superusuario
-    nombre_usuario = input("Nombre de superusuario: ").strip()
+    nombre_usuario = input("Nombre del superusuario: ").strip()
     correo = input("Correo del superusuario: ").strip()
     contrasena = input("Contraseña: ").strip()
     confirmar_contrasena = input("Confirma la contraseña: ").strip()
@@ -72,7 +72,7 @@ def registrar_cuenta(conexion):
         query_correo = "SELECT id FROM usuarios WHERE correo_electronico = %s"
         cursor.execute(query_correo, (correo,))
         if cursor.fetchone():
-            print("\nError: Este correo ya está registrado. Usa otro correo electrónico.")
+            print("\nError: Este correo ya fue registrado previamente. Por favor, utiliza otro correo electrónico.")
             return
 
         # Insertar los datos del nuevo usuario con plan básico por defecto
