@@ -44,16 +44,15 @@ def editar_usuario(conexion):
         # Solicitar los nuevos datos para el usuario
         nuevo_nombre = input("Nuevo nombre de usuario: ").strip()
         nuevo_correo = input("Nuevo correo electrónico: ").strip()
-        nuevo_plan = input("Nuevo plan ('basico', 'estandar', 'premium'): ").strip()
         nuevo_rol = input("Nuevo rol (admin, usuario): ").strip()
         nuevo_estado = input("Nuevo estado ('activa o inactiva'): ").strip()
         # Actualizar los datos del usuario en la base de datos
         query = """
         UPDATE usuarios
-        SET nombre_usuario = %s, correo_electronico = %s, plan_suscripcion = %s, rol = %s, estado = %s
+        SET nombre_usuario = %s, correo_electronico = %s, rol = %s, estado = %s
         WHERE id = %s
         """
-        cursor.execute(query, (nuevo_nombre, nuevo_correo, nuevo_plan, nuevo_rol, nuevo_estado, id_usuario))
+        cursor.execute(query, (nuevo_nombre, nuevo_correo, nuevo_rol, nuevo_estado, id_usuario))
         conexion.commit()
 
         print("Usuario actualizado exitosamente.")
@@ -93,6 +92,155 @@ def eliminar_usuario(conexion):
     finally:
         cursor.close()
 
+
+
+    """
+    Menú para gestionar planes y asignar uno nuevo a los usuarios.
+    """
+    cursor = conexion.cursor()
+    while True:
+        print("\n=== Gestión de Planes ===")
+        print("1. Ver usuarios y sus planes")
+        print("2. Asignar un nuevo plan a un usuario")
+        print("3. Regresar")
+
+        opcion = input("Selecciona una opción: ").strip()
+
+        if opcion == "1":
+            try:
+                # Mostrar los usuarios con sus planes
+                query = "SELECT id, plan_suscripcion FROM usuarios"
+                cursor.execute(query)
+                usuarios = cursor.fetchall()
+
+                if usuarios:
+                    print("\nUsuarios y sus planes asignados:")
+                    print(f"{'ID Usuario':<12}{'Nombre':<20}{'Plan Asignado'}")
+                    print("-" * 50)
+                    for usuario in usuarios:
+                        print(f"{usuario[0]:<12}{usuario[1]:<20}{usuario[2]}")
+                else:
+                    print("No hay usuarios registrados.")
+            except Exception as e:
+                print(f"Error al obtener los usuarios: {e}")
+        elif opcion == "2":
+            try:
+                # Mostrar los planes disponibles
+                query = "SELECT id, tipo_plan FROM planes"
+                cursor.execute(query)
+                planes = cursor.fetchall()
+
+                if planes:
+                    print("\nPlanes disponibles:")
+                    print(f"{'ID Plan':<10}{'Tipo de Plan'}")
+                    print("-" * 30)
+                    for plan in planes:
+                        print(f"{plan[0]:<10}{plan[1]}")
+                    
+                    id_usuario = int(input("\nID del usuario para asignar el nuevo plan: ").strip())
+                    nuevo_plan_id = int(input("ID del nuevo plan a asignar: ").strip())
+
+                    # Verificar si el usuario existe y si el plan es válido
+                    query_usuario = "SELECT id FROM usuarios WHERE id = %s"
+                    cursor.execute(query_usuario, (id_usuario,))
+                    if cursor.fetchone():
+                        query_plan = "SELECT id FROM planes WHERE id = %s"
+                        cursor.execute(query_plan, (nuevo_plan_id,))
+                        if cursor.fetchone():
+                            # Asignar el nuevo plan al usuario
+                            query_update = "UPDATE usuarios SET id_plan = %s WHERE id = %s"
+                            cursor.execute(query_update, (nuevo_plan_id, id_usuario))
+                            conexion.commit()
+                            print("Plan asignado exitosamente.")
+                        else:
+                            print("ID de plan no válido.")
+                    else:
+                        print("ID de usuario no válido.")
+            except Exception as e:
+                print(f"Error al asignar el plan: {e}")
+        elif opcion == "3":
+            break
+        else:
+            print("Opción no válida. Intenta nuevamente.")
+    cursor.close()
+
+def gestionar_planes(conexion):
+    """
+    Menú para gestionar planes y asignar uno nuevo a los usuarios.
+    """
+    cursor = conexion.cursor()
+    while True:
+        print("\n=== Gestión de Planes ===")
+        print("1. Ver usuarios y sus planes")
+        print("2. Asignar un nuevo plan a un usuario")
+        print("3. Regresar")
+
+        opcion = input("Selecciona una opción: ").strip()
+
+        if opcion == "1":
+            try:
+                # Mostrar los usuarios con sus planes asignados
+                query = """
+                SELECT id, nombre_usuario, plan_suscripcion
+                FROM usuarios
+                """
+                cursor.execute(query)
+                usuarios = cursor.fetchall()
+
+                if usuarios:
+                    # Crear la tabla con PrettyTable
+                    tabla = PrettyTable()
+                    tabla.field_names = ["ID Usuario", "Nombre de Usuario", "Plan Asignado"]
+
+                    # Agregar las filas de datos
+                    for usuario in usuarios:
+                        tabla.add_row([usuario[0], usuario[1], usuario[2]])
+
+                    # Mostrar la tabla
+                    print(tabla)
+                else:
+                    print("No hay usuarios registrados.")
+            except Exception as e:
+                print(f"Error al obtener los usuarios: {e}")
+        
+        elif opcion == "2":
+            try:
+                # Planes disponibles para asignar
+                planes_disponibles = ['basico', 'estandar', 'premium']
+                print("\nPlanes disponibles para asignar:")
+                for idx, plan in enumerate(planes_disponibles, 1):
+                    print(f"{idx}. {plan}")
+
+                # Solicitar al administrador el ID del usuario y el plan
+                id_usuario = int(input("\nID del usuario para asignar el nuevo plan: ").strip())
+                nuevo_plan_idx = int(input(f"Selecciona el número del nuevo plan a asignar (1-{len(planes_disponibles)}): ").strip())
+
+                # Validar la selección del plan
+                if 1 <= nuevo_plan_idx <= len(planes_disponibles):
+                    nuevo_plan = planes_disponibles[nuevo_plan_idx - 1]
+
+                    # Verificar si el usuario existe
+                    query_usuario = "SELECT id FROM usuarios WHERE id = %s"
+                    cursor.execute(query_usuario, (id_usuario,))
+                    if cursor.fetchone():
+                        # Asignar el nuevo plan al usuario
+                        query_update = "UPDATE usuarios SET plan_suscripcion = %s WHERE id = %s"
+                        cursor.execute(query_update, (nuevo_plan, id_usuario))
+                        conexion.commit()
+                        print(f"Plan '{nuevo_plan}' asignado exitosamente al usuario con ID {id_usuario}.")
+                    else:
+                        print("ID de usuario no válido.")
+                else:
+                    print("Selección de plan no válida.")
+            except Exception as e:
+                print(f"Error al asignar el plan: {e}")
+        
+        elif opcion == "3":
+            break
+        else:
+            print("Opción no válida. Intenta nuevamente.")
+    
+    cursor.close()
 
 def agregar_pelicula_serie(conexion):
     """
@@ -196,81 +344,5 @@ def eliminar_pelicula_serie(conexion):
         cursor.close()
 
 
-def gestionar_planes(conexion):
-    """
-    Menú para gestionar planes con formato de tabla.
-    """
-    cursor = conexion.cursor()
-    while True:
-        print("\n=== Gestión de Planes ===")
-        print("1. Ver planes")
-        print("2. Crear un nuevo plan")
-        print("3. Editar un plan")
-        print("4. Eliminar un plan")
-        print("5. Regresar")
 
-        opcion = input("Selecciona una opción: ").strip()
-
-        if opcion == "1":
-            try:
-                query = "SELECT id, tipo_plan, caracteristicas, precio FROM planes"
-                cursor.execute(query)
-                planes = cursor.fetchall()
-
-                if planes:
-                    # Crear la tabla con PrettyTable
-                    tabla = PrettyTable()
-                    tabla.field_names = ["ID", "Tipo", "Características", "Precio"]
-
-                    # Agregar las filas de datos
-                    for plan in planes:
-                        tabla.add_row([plan[0], plan[1], plan[2], f"${plan[3]:.2f}"])
-
-                    # Mostrar la tabla
-                    print(tabla)
-                else:
-                    print("No hay planes disponibles.")
-            except Exception as e:
-                print(f"Error al obtener los planes: {e}")
-        elif opcion == "2":
-            tipo = input("Tipo de plan: ").strip()
-            caracteristicas = input("Características: ").strip()
-            precio = float(input("Precio: "))
-            try:
-                query = "INSERT INTO planes (tipo_plan, caracteristicas, precio) VALUES (%s, %s, %s)"
-                cursor.execute(query, (tipo, caracteristicas, precio))
-                conexion.commit()
-                print("Plan creado exitosamente.")
-            except Exception as e:
-                print(f"Error al crear el plan: {e}")
-        elif opcion == "3":
-            id_plan = int(input("ID del plan a editar: "))
-            nuevo_tipo = input("Nuevo tipo de plan: ").strip()
-            nuevas_caracteristicas = input("Nuevas características: ").strip()
-            nuevo_precio = float(input("Nuevo precio: "))
-            try:
-                query = """
-                UPDATE planes 
-                SET tipo_plan = %s, caracteristicas = %s, precio = %s 
-                WHERE id = %s
-                """
-                cursor.execute(query, (nuevo_tipo, nuevas_caracteristicas, nuevo_precio, id_plan))
-                conexion.commit()
-                print("Plan actualizado exitosamente.")
-            except Exception as e:
-                print(f"Error al actualizar el plan: {e}")
-        elif opcion == "4":
-            id_plan = int(input("ID del plan a eliminar: "))
-            try:
-                query = "DELETE FROM planes WHERE id = %s"
-                cursor.execute(query, (id_plan,))
-                conexion.commit()
-                print("Plan eliminado exitosamente.")
-            except Exception as e:
-                print(f"Error al eliminar el plan: {e}")
-        elif opcion == "5":
-            break
-        else:
-            print("Opción no válida. Intenta nuevamente.")
-    cursor.close()
 
