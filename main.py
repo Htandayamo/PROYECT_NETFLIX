@@ -9,10 +9,11 @@ def main():
             # Ejecutar el menú de login donde el usuario puede iniciar sesión o registrar una nueva cuenta
             menu_login(conexion)
         except Exception as e:
-            print(f"Ocurrió un error: {e}")
+            print(f"Ocurrio un error : {e}")
         finally:
             # Cerrar la conexión una vez que se haya terminado con el programa
             cerrar_conexion(conexion)
 
 if __name__ == "__main__":
     main()
+
