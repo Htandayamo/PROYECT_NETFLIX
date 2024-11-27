@@ -1,5 +1,6 @@
 from login import iniciar_sesion, registrar_cuenta, crear_superusuario
 from admin import ver_usuarios, gestionar_planes, agregar_pelicula_serie, actualizar_pelicula_serie, eliminar_pelicula_serie, editar_usuario, eliminar_usuario, ver_peliculas_series
+from usuario import ver_perfil, actualizar_perfil, agregar_resena, ver_resenas, actualizar_resena, eliminar_resena, eliminar_cuenta
 from prettytable import PrettyTable
 import sys
 
@@ -45,57 +46,42 @@ def menu_principal(conexion, usuario):
     """
     while True:
         print("\n========= MENÚ PRINCIPAL ===========")
-        print(f"¡Bienvenido, {usuario[1]}!")
+        print(f"¡Bienvenido, {usuario[1]}!")  # usuario[1] es el nombre de usuario.
         print("1. Ver Perfil")
-        print("2. Gestionar planes")
-        print("3. Gestionar dispositivos")
-        print("4. Ver contenido")
-        print("5. Consultar historial de visualizaciones")
-        print("6. Consultar historial de pagos")
-        print("7. Gestionar reseñas")
-        print("8. Cerrar sesión")
+        print("2. Actualizar Perfil")
+        print("3. Ver Películas y Series")
+        print("4. Agregar Reseña")
+        print("5. Ver Reseñas")
+        print("6. Actualizar Reseña")
+        print("7. Eliminar Reseña")
+        print("8. Eliminar Cuenta")
+        print("9. Cerrar Sesión")
         opcion = input("Selecciona una opción: ")
 
         match opcion:
             case "1":
-                gestionar_perfiles(conexion, usuario['IdUsuario'])
+                ver_perfil(conexion, usuario)
             case "2":
-                gestionar_planes(conexion, usuario)
+                actualizar_perfil(conexion, usuario)
             case "3":
-                gestionar_dispositivos(conexion, usuario)
+                ver_peliculas_series(conexion)
             case "4":
-                ver_contenido(conexion)
+                agregar_resena(conexion, usuario)
             case "5":
-                consultar_historial_visualizaciones(conexion, usuario)
+                ver_resenas(conexion)
             case "6":
-                consultar_historial_pagos(conexion, usuario)
+                actualizar_resena(conexion, usuario[0])
             case "7":
-                gestionar_resenas(conexion, usuario)
+                eliminar_resena(conexion, usuario[0])
             case "8":
-                cerrar_sesion()
+                eliminar_cuenta(conexion, usuario[0])
+                break  # Salir del menú si la cuenta se elimina.
+            case "9":
+                print("¡Hasta luego!")
                 break
             case _:
                 print("Opción inválida. Intenta nuevamente.")
 
-
-        match opcion:
-            case "1":
-                gestionar_perfiles(conexion, usuario['IdUsuario'])
-            case "2":
-                gestionar_planes(conexion, usuario)
-            case "3":
-                consultar_visualizaciones(conexion, usuario)
-            case "4":
-                calificar_contenido(conexion, usuario)
-            case "5":
-                gestionar_dispositivos(conexion, usuario)
-            case "6":
-                consultar_historial_pagos(conexion, usuario)
-            case "7":
-                cerrar_sesion()
-                break
-            case _:
-                print("Opción inválida. Intenta nuevamente.")
 
 
 def menu_superusuario(conexion):
